@@ -1,16 +1,40 @@
-What is Zabbix
-Overview
 
 <img src="\resources\jira-logo-scaled.png" alt="logo">
 
-Zabbix was created by Alexei Vladishev, and currently is actively developed and supported by Zabbix SIA.
+Install and configure Zabbix server
+a. Install Repository with MySQL database
+documentation
+# wget http://repo.zabbix.com/zabbix/3.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_3.4-1+xenial_all.deb
+# dpkg -i zabbix-release_3.4-1+xenial_all.deb
+# apt update
+b. Install Zabbix server, frontend, agent
+# apt install zabbix-server-mysql zabbix-frontend-php zabbix-agent
+c. Create initial database
+documentation
+# mysql -uroot -p
+password
+mysql> create database zabbix character set utf8 collate utf8_bin;
+mysql> grant all privileges on zabbix.* to zabbix@localhost identified by 'password';
+mysql> quit;
 
-Zabbix is an enterprise-class open source distributed monitoring solution.
+Import initial schema and data. You will be prompted to enter your newly created password.
+# zcat /usr/share/doc/zabbix-server-mysql*/create.sql.gz | mysql -uzabbix -p zabbix
+d. Configure the database for Zabbix server
+DBPassword=password
+e. Start Zabbix server and agent processes
 
-Zabbix is software that monitors numerous parameters of a network and the health and integrity of servers. Zabbix uses a flexible notification mechanism that allows users to configure e-mail based alerts for virtually any event. This allows a fast reaction to server problems. Zabbix offers excellent reporting and data visualisation features based on the stored data. This makes Zabbix ideal for capacity planning.
+Start Zabbix server and agent processes and make it start at system boot:
+# systemctl restart zabbix-server zabbix-agent apache2
+# systemctl enable zabbix-server zabbix-agent apache2
+f. Configure PHP for Zabbix frontend
+Edit file /etc/zabbix/apache.conf, uncomment and set the right timezone for you.
+# php_value date.timezone Europe/Riga
 
-Zabbix supports both polling and trapping. All Zabbix reports and statistics, as well as configuration parameters, are accessed through a web-based frontend. A web-based frontend ensures that the status of your network and the health of your servers can be assessed from any location. Properly configured, Zabbix can play an important role in monitoring IT infrastructure. This is equally true for small organisations with a few servers and for large companies with a multitude of servers.
+Now your Zabbix server is up and running!
+Configure Zabbix frontend
 
-Zabbix is free of cost. Zabbix is written and distributed under the GPL General Public License version 2. It means that its source code is freely distributed and available for the general public.
+Connect to your newly installed Zabbix frontend: http://server_ip_or_name/zabbix
+Follow steps described in Zabbix documentation: Installing frontend
+Start using Zabbix
 
-https://www.zabbix.com/documentation/3.4/manual/introduction/about
+See Quickstart guide
