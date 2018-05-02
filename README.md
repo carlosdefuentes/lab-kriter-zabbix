@@ -1,4 +1,4 @@
-
+<img src="\resources\jira-logo-scaled.png" alt="logo">
 <p><strong>Install and configure Zabbix server</strong></p>
 <p><br /><strong>a. Install Repository with MySQL database</strong><br /><br /># wget http://repo.zabbix.com/zabbix/3.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_3.4-1+xenial_all.deb<br /># dpkg -i zabbix-release_3.4-1+xenial_all.deb<br /># apt update</p>
 <p><br /><strong>b. Install Zabbix server, frontend, agent</strong></p>
