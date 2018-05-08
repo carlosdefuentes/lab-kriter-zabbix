@@ -1,18 +1,16 @@
 <img src="\resources\jira-logo-scaled.png" alt="logo">
+<div class="level1">
 <p><strong>How to configure an Active Agent in Zabbix</strong></p>
-<p><br /><strong>a. Install Repository with MySQL database</strong><br /><br /># wget http://repo.zabbix.com/zabbix/3.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_3.4-1+xenial_all.deb<br /># dpkg -i zabbix-release_3.4-1+xenial_all.deb<br /># apt update</p>
-<p><br /><strong>b. Install Zabbix server, frontend, agent</strong></p>
-<p><br /># apt install zabbix-server-mysql zabbix-frontend-php zabbix-agent</p>
-<p><br /><strong>c. Create initial database</strong><br /><br /># mysql -uroot -p<br />password</p>
-<p>mysql&gt; create database zabbix character set utf8 collate utf8_bin;<br />mysql&gt; grant all privileges on zabbix.* to zabbix@localhost identified by 'password';<br />mysql&gt; quit;</p>
-<p>Import initial schema and data. You will be prompted to enter your newly created password.</p>
-<p><br /># zcat /usr/share/doc/zabbix-server-mysql*/create.sql.gz | mysql -uzabbix -p zabbix</p>
-<p><strong>d. Configure the database for Zabbix server</strong><br />DBPassword=password</p>
-<p><strong>e. Start Zabbix server and agent processes</strong></p>
-<p>Start Zabbix server and agent processes and make it start at system boot:</p>
-<p># systemctl restart zabbix-server zabbix-agent apache2<br /># systemctl enable zabbix-server zabbix-agent apache2</p>
-<p><strong>f. Configure PHP for Zabbix frontend</strong></p>
-<p><br />Edit file /etc/zabbix/apache.conf, uncomment and set the right timezone for you.<br /># php_value date.timezone Europe/Riga</p>
-<p>Now your Zabbix server is up and running!</p>
-<p>Configure Zabbix frontend</p>
-<p>Connect to your newly installed Zabbix frontend: http://server_ip_or_name/zabbix<br />Follow steps described in Zabbix documentation: Installing frontend<br />Start using Zabbix</p>
+<p>Zabbix Active checks require more complex processing: the agent must first retrieve a list of items from Zabbix server for independent processing, then it will periodically send new values to the server. Active checks are needed when it is not possible for the zabbix server to access a specific port on the remote monitored machine (for example this can be caused by a firewall).</p>
+</div>
+<div class="level2">
+<p>Edit <code>/etc/zabbix/zabbix_agentd.conf</code> and set the following parameters</p>
+<pre class="code">ServerActive=YOUR_SERVER_IP
+Hostname=CLIENT_HOSTNAME</pre>
+<p>In <code>ServerActive</code> you have the set one or more comma delimited Zabbix servers for active checks specifying the IP or the hostname. <code>Hostname</code> must be a unique, case sensitive hostname for this host: this value is required for active checks and must match the value configured on the server. </p>
+<p>You can also set</p>
+<pre class="code">StartAgents=0</pre>
+<p>to disable the passive checks (not required, but reduces the number of unused processes)</p>
+<p>Remember to restart the service with</p>
+<pre class="code">service zabbix-agent restart</pre>
+</div>
